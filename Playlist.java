@@ -1,41 +1,63 @@
-import java.util.ArrayList;  // ✅ Required for ArrayList
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 public class Playlist extends MusicPlayer {
-    
     String playlistName;
-    ArrayList<Song> songs = new ArrayList<>();  // ✅ Must initialize the list
+    ArrayList<Song> songs = new ArrayList<>();
+
+    Playlist(String playlistName) {
+        this.playlistName = playlistName;
+    }
 
     void addSong(Song song) {
         songs.add(song);
-        System.out.println("Song \"" + song.title + "\" added to playlist \"" + playlistName + "\"");
+        System.out.println("✅ Added: " + song.title + " by " + song.artist);
     }
 
-    void removeSong(Song song) {
-        songs.remove(song);
-        System.out.println("Song \"" + song.title + "\" removed from playlist \"" + playlistName + "\"");
+    void removeSong(String title) {
+        songs.removeIf(song -> song.title.equalsIgnoreCase(title));
+        System.out.println("❌ Removed song: " + title);
     }
 
     void playAll() {
         if (songs.isEmpty()) {
-            System.out.println("Playlist \"" + playlistName + "\" is empty.");
+            System.out.println("🚫 Playlist is empty!");
             return;
         }
-
-        System.out.println("🎵 Playing all songs in playlist \"" + playlistName + "\":");
+        System.out.println("\n▶️ Now playing playlist: " + playlistName);
         for (Song song : songs) {
-            song.play();             // inherited method from MusicPlayer
-            song.displayDetails();   // from Song
-            System.out.println();
+            song.play();
+            song.displayDetails();
+            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+            song.stop();
         }
     }
 
     void showPlaylist() {
-        System.out.println("📀 Playlist: " + playlistName);
+        System.out.println("\n📜 Playlist: " + playlistName);
+        if (songs.isEmpty()) System.out.println("(No songs added yet)");
+        else {
+            for (int i = 0; i < songs.size(); i++) {
+                System.out.println((i + 1) + ". " + songs.get(i).title + " - " + songs.get(i).artist);
+            }
+        }
+    }
+
+    void shufflePlay() {
         if (songs.isEmpty()) {
-            System.out.println("(No songs added yet)");
-        } else {
-            for (Song song : songs) {
-                System.out.println("- " + song.title + " by " + song.artist);
+            System.out.println("🚫 No songs to shuffle!");
+            return;
+        }
+        Collections.shuffle(songs);
+        playAll();
+    }
+
+    void searchSong(String keyword) {
+        System.out.println("\n🔍 Search results for \"" + keyword + "\":");
+        for (Song s : songs) {
+            if (s.title.toLowerCase().contains(keyword.toLowerCase())) {
+                s.displayDetails();
             }
         }
     }
